@@ -30,3 +30,19 @@ jobs:
         run: mvn -B test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+
+  required:
+    name: Required
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [ check, run ]
+    steps:
+      - name: Guardian
+        run: |
+          if [[ ! ( \
+                 "${{ needs.run.result }}" == "success" \
+              && "${{ needs.check.result }}" == "success" \
+              ) ]]; then
+            echo "Required jobs haven't been completed successfully."
+            exit -1
+          fi      
